@@ -1,6 +1,7 @@
 package com.sanjana.finsightcloud.service;
 
 import com.sanjana.finsightcloud.exception.ExpenseNotFoundException;
+import com.sanjana.finsightcloud.dto.ExpenseRequest;
 import com.sanjana.finsightcloud.entity.Expense;
 import com.sanjana.finsightcloud.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,6 @@ public class ExpenseService {
         this.expenseRepository = expenseRepository;
     }
 
-    public Expense saveExpense(Expense expense) {
-        return expenseRepository.save(expense);
-    }
-
     public List<Expense> getAllExpenses() {
         return expenseRepository.findAll();
     }
@@ -28,7 +25,7 @@ public class ExpenseService {
                 .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID " + id + " not found"));
     }
 
-    public Expense updateExpense(Long id, Expense updatedExpense) {
+    public Expense updateExpense(Long id, ExpenseRequest updatedExpense) {
         Expense existingExpense = expenseRepository.findById(id)      // find does this expense exists? 
             .orElseThrow(() -> new ExpenseNotFoundException(
                     "Expense with ID " + id + " not found"
@@ -50,5 +47,18 @@ public class ExpenseService {
             ));
 
         expenseRepository.delete(expense);
-}
+    }
+
+    public Expense saveExpense(ExpenseRequest request) {
+
+        Expense expense = new Expense();
+
+        expense.setTitle(request.getTitle());
+        expense.setAmount(request.getAmount());
+        expense.setCategory(request.getCategory());
+        expense.setExpenseDate(request.getExpenseDate());
+        expense.setDescription(request.getDescription());
+
+        return expenseRepository.save(expense);
+    }
 }

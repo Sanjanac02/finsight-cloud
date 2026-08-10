@@ -3,6 +3,8 @@ package com.sanjana.finsightcloud.controller;
 import com.sanjana.finsightcloud.entity.Expense;
 import com.sanjana.finsightcloud.service.ExpenseService;
 import org.springframework.web.bind.annotation.*;
+import com.sanjana.finsightcloud.dto.ExpenseRequest;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -16,8 +18,8 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public Expense saveExpense(@RequestBody Expense expense) {
-        return expenseService.saveExpense(expense);
+    public Expense saveExpense(@Valid @RequestBody ExpenseRequest expenseRequest) {
+        return expenseService.saveExpense(expenseRequest);
     }
 
     @GetMapping
@@ -31,7 +33,7 @@ public class ExpenseController {
     }
 
     @PutMapping("/{id}")
-    public Expense updatExpense(@PathVariable Long id, @RequestBody Expense updatedExpense) {
+    public Expense updatExpense(@PathVariable Long id, @Valid @RequestBody ExpenseRequest updatedExpense) {
         return expenseService.updateExpense(id, updatedExpense);
     }
 
