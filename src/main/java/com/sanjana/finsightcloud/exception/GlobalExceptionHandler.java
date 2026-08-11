@@ -8,33 +8,43 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.sanjana.finsightcloud.exception.EmailAlreadyExistsException;
 
 @RestControllerAdvice         // central place for handling exceptions from all REST controllers
 public class GlobalExceptionHandler {
     
-    @ExceptionHandler(ExpenseNotFoundException.class) 
-    public ResponseEntity<String> handleExpenseNotFound(
+        @ExceptionHandler(ExpenseNotFoundException.class) 
+        public ResponseEntity<String> handleExpenseNotFound(
                 ExpenseNotFoundException exception) {
         
-        return ResponseEntity           //what api sends back to client
-                    .status(HttpStatus.NOT_FOUND)
-                    .body(exception.getMessage());
-    }
+                return ResponseEntity           //what api sends back to client
+                        .status(HttpStatus.NOT_FOUND)
+                        .body(exception.getMessage());
+        }
 
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, String>> handleValidationErrors(
-            MethodArgumentNotValidException exception) {
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<Map<String, String>> handleValidationErrors(
+                MethodArgumentNotValidException exception) {
 
-        Map<String, String> errors = new HashMap<>();
+                Map<String, String> errors = new HashMap<>();
 
-        exception.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
-        );
+                exception.getBindingResult().getFieldErrors().forEach(error ->
+                        errors.put(error.getField(), error.getDefaultMessage())
+                );
 
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(errors);
-}
+                return ResponseEntity
+                        .status(HttpStatus.BAD_REQUEST)
+                        .body(errors);
+        }
+
+        @ExceptionHandler(EmailAlreadyExistsException.class)
+        public ResponseEntity<String> handleEmailAlreadyExists(
+                EmailAlreadyExistsException exception) {
+
+                return ResponseEntity
+                        .status(HttpStatus.CONFLICT)
+                        .body(exception.getMessage());
+        }
 }
   
