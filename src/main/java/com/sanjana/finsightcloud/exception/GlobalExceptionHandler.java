@@ -9,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import com.sanjana.finsightcloud.exception.EmailAlreadyExistsException;
+import com.sanjana.finsightcloud.exception.InvalidCredentialsException;
 
 @RestControllerAdvice         // central place for handling exceptions from all REST controllers
 public class GlobalExceptionHandler {
@@ -44,6 +45,15 @@ public class GlobalExceptionHandler {
 
                 return ResponseEntity
                         .status(HttpStatus.CONFLICT)
+                        .body(exception.getMessage());
+        }
+
+        @ExceptionHandler(InvalidCredentialsException.class)
+        public ResponseEntity<String> handleInvalidCredentials(
+                InvalidCredentialsException exception) {
+
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
                         .body(exception.getMessage());
         }
 }

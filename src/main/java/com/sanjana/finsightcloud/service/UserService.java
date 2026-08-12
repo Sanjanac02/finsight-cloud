@@ -7,16 +7,26 @@ import com.sanjana.finsightcloud.entity.User;
 import com.sanjana.finsightcloud.exception.EmailAlreadyExistsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.sanjana.finsightcloud.dto.UserResponse;
+import com.sanjana.finsightcloud.dto.LoginRequest;
+import com.sanjana.finsightcloud.dto.LoginResponse;
+import com.sanjana.finsightcloud.exception.InvalidCredentialsException;
+import com.sanjana.finsightcloud.service.JwtService;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    public UserService(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    public UserService(
+                    UserRepository userRepository, 
+                    BCryptPasswordEncoder passwordEncoder,
+                    JwtService jwtService) {
+
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     public UserResponse registerUser(UserRequest request) {
@@ -42,6 +52,31 @@ public class UserService {
         response.setId(savedUser.getId());
         response.setName(savedUser.getName());
         response.setEmail(savedUser.getEmail());
+
+        return response;
+    }
+
+
+    public LoginResponse loginUser(LoginRequest request) {
+
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new InvalidCredentialsException(
+                        "Invalid email or password"
+                ));
+
+        if (!passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword())) {
+
+            throw new InvalidCredentialsException(
+                    "Invalid email or password"
+            );
+        }
+
+        String token = jwtService.generateToken(user.getEmail());
+
+        LoginResponse response = new LoginResponse();
+        response.setToken(token);
 
         return response;
     }

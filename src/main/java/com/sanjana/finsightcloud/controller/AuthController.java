@@ -1,11 +1,15 @@
 package com.sanjana.finsightcloud.controller;
 
+import com.sanjana.finsightcloud.dto.LoginRequest;
+import com.sanjana.finsightcloud.dto.LoginResponse;
 import com.sanjana.finsightcloud.dto.UserRequest;
 import com.sanjana.finsightcloud.dto.UserResponse;
 import com.sanjana.finsightcloud.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import com.sanjana.finsightcloud.dto.UserResponse;
+import com.sanjana.finsightcloud.dto.LoginRequest;
+import com.sanjana.finsightcloud.dto.LoginResponse;
 
 @RestController
 @RequestMapping("/auth")
@@ -20,6 +24,11 @@ public class AuthController {
     @PostMapping("/register")
     public UserResponse registerUser(@Valid @RequestBody UserRequest userRequest) {
         return userService.registerUser(userRequest);
+    }
+
+    @PostMapping("/login")
+    public LoginResponse loginUser(@Valid @RequestBody LoginRequest loginRequest) {
+        return userService.loginUser(loginRequest);
     }
 
 }
