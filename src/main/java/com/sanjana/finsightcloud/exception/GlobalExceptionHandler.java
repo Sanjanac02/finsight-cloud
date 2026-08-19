@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.sanjana.finsightcloud.exception.UserNotFoundException;
 import com.sanjana.finsightcloud.exception.EmailAlreadyExistsException;
 import com.sanjana.finsightcloud.exception.InvalidCredentialsException;
 
@@ -54,6 +55,15 @@ public class GlobalExceptionHandler {
 
                 return ResponseEntity
                         .status(HttpStatus.UNAUTHORIZED)
+                        .body(exception.getMessage());
+        }
+
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<String> handleUserNotFound(
+                        UserNotFoundException exception) {
+
+                return ResponseEntity
+                        .status(HttpStatus.NOT_FOUND)
                         .body(exception.getMessage());
         }
 }
