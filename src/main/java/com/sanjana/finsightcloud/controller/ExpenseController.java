@@ -6,6 +6,8 @@ import com.sanjana.finsightcloud.entity.Expense;
 import com.sanjana.finsightcloud.service.ExpenseService;
 import org.springframework.web.bind.annotation.*;
 import com.sanjana.finsightcloud.dto.ExpenseRequest;
+import com.sanjana.finsightcloud.dto.ExpenseResponse;
+
 import jakarta.validation.Valid;
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class ExpenseController {
     }
 
     @PostMapping
-    public Expense saveExpense(@Valid @RequestBody ExpenseRequest expenseRequest) {
+    public ExpenseResponse saveExpense(@Valid @RequestBody ExpenseRequest expenseRequest) {
         
         String userEmail = SecurityContextHolder.getContext()
                                                 .getAuthentication()
@@ -30,7 +32,7 @@ public class ExpenseController {
     }
 
     @GetMapping
-    public List<Expense> getAllExpenses() {
+    public List<ExpenseResponse> getAllExpenses() {
 
         String userEmail = SecurityContextHolder 
                         .getContext() 
@@ -41,20 +43,18 @@ public class ExpenseController {
     }
 
     @GetMapping("/{id}")
-    public Expense getExpenseById(@PathVariable Long id) {
+    public ExpenseResponse getExpenseById(@PathVariable Long id) {
 
         String userEmail = SecurityContextHolder    
                     .getContext()
                     .getAuthentication()
                     .getName();
 
-        System.out.println("Authenticated user: " + userEmail);
-
         return expenseService.getExpenseById(id, userEmail);
     }
 
     @PutMapping("/{id}")
-    public Expense updatExpense(@PathVariable Long id, @Valid @RequestBody ExpenseRequest updatedExpense) {
+    public ExpenseResponse updateExpense(@PathVariable Long id, @Valid @RequestBody ExpenseRequest updatedExpense) {
 
         String userEmail = SecurityContextHolder
                         .getContext()

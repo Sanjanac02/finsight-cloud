@@ -3,11 +3,13 @@ package com.sanjana.finsightcloud.service;
 import com.sanjana.finsightcloud.exception.ExpenseNotFoundException;
 import com.sanjana.finsightcloud.exception.UserNotFoundException;
 import com.sanjana.finsightcloud.dto.ExpenseRequest;
+import com.sanjana.finsightcloud.dto.ExpenseResponse;
 import com.sanjana.finsightcloud.entity.Expense;
 import com.sanjana.finsightcloud.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
 import com.sanjana.finsightcloud.entity.User;
 import com.sanjana.finsightcloud.repository.UserRepository;
+import com.sanjana.finsightcloud.dto.ExpenseResponse;
 import java.util.List;
 
 @Service
@@ -21,23 +23,31 @@ public class ExpenseService {
         this.userRepository = userRepository;
     }
 
-    public List<Expense> getAllExpenses(String userEmail) {
+    public List<ExpenseResponse> getAllExpenses(String userEmail) {
 
         User user = userRepository.findByEmail(userEmail)
                     .orElseThrow(() -> new UserNotFoundException("User not found"));
-        return expenseRepository.findByUserId(user.getId());
+        return expenseRepository.findByUserId(user.getId())
+                    .stream()
+                    .map(this::toExpenseResponse)
+                    .toList();
     }
 
-    public Expense getExpenseById(Long id, String userEmail) {
+    public ExpenseResponse getExpenseById(Long id, String userEmail) {
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
 
-        return expenseRepository.findByIdAndUserId(id, user.getId())
-                .orElseThrow(() -> new ExpenseNotFoundException("Expense with ID " + id + " not found"));
+        Expense expense = expenseRepository.findByIdAndUserId(id, user.getId())
+                    .orElseThrow(() ->
+                            new ExpenseNotFoundException(
+                                        "Expense not found with id: " + id
+                            ));
+
+        return toExpenseResponse(expense);
     }
 
-    public Expense updateExpense(Long id, ExpenseRequest updatedExpense, String userEmail) {
+    public ExpenseResponse updateExpense(Long id, ExpenseRequest updatedExpense, String userEmail) {
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -54,7 +64,9 @@ public class ExpenseService {
         expense.setExpenseDate(updatedExpense.getExpenseDate());
         expense.setDescription(updatedExpense.getDescription());
 
-        return expenseRepository.save(expense);
+        Expense savedExpense = expenseRepository.save(expense);
+
+        return toExpenseResponse(savedExpense);
     }
 
     public void deleteExpense(Long id, String userEmail) {
@@ -70,7 +82,7 @@ public class ExpenseService {
         expenseRepository.delete(expense);
     }
 
-    public Expense saveExpense(ExpenseRequest request, String userEmail) {
+    public ExpenseResponse saveExpense(ExpenseRequest request, String userEmail) {
 
         User user = userRepository.findByEmail(userEmail)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -84,6 +96,22 @@ public class ExpenseService {
         expense.setDescription(request.getDescription());
 
         expense.setUser(user);
-        return expenseRepository.save(expense);
+
+        Expense savedExpense = expenseRepository.save(expense);
+        return toExpenseResponse(savedExpense);
+    }
+
+    private ExpenseResponse toExpenseResponse(Expense expense) {
+
+        ExpenseResponse response = new ExpenseResponse();
+
+        response.setId(expense.getId());
+        response.setTitle(expense.getTitle());
+        response.setAmount(expense.getAmount());
+        response.setCategory(expense.getCategory());
+        response.setExpenseDate(expense.getExpenseDate());
+        response.setDescription(expense.getDescription());
+
+        return response;
     }
 }
