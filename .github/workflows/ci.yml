@@ -61,7 +61,7 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
           script: |
-            docker pull ghcr.io/${{ github.repository }}:main
+            docker pull ghcr.io/sanjanac02/finsight-cloud:main
             docker rm -f finsight-app || true
             docker run -d \
               --name finsight-app \
@@ -71,4 +71,4 @@ jobs:
               -e DB_USERNAME="finsight_admin" \
               -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-              ghcr.io/${{ github.repository }}:main
+              ghcr.io/sanjanac02/finsight-cloud:main
