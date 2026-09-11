@@ -7,9 +7,7 @@ import com.sanjana.finsightcloud.dto.UserResponse;
 import com.sanjana.finsightcloud.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
-import com.sanjana.finsightcloud.dto.UserResponse;
-import com.sanjana.finsightcloud.dto.LoginRequest;
-import com.sanjana.finsightcloud.dto.LoginResponse;
+
 
 @RestController
 @RequestMapping("/auth")
