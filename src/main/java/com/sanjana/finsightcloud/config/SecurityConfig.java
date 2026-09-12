@@ -1,9 +1,9 @@
 package com.sanjana.finsightcloud.config;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -11,9 +11,9 @@ import com.sanjana.finsightcloud.security.JwtAuthenticationFilter;
 import com.sanjana.finsightcloud.service.JwtService;
 
 import jakarta.servlet.http.HttpServletResponse;
-
-import com.sanjana.finsightcloud.service.JwtService;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
@@ -31,6 +31,7 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> {})
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
@@ -56,6 +57,32 @@ public class SecurityConfig {
         );
 
         return http.build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.setAllowedOrigins(
+                List.of("http://localhost:5173")
+        );
+
+        configuration.setAllowedMethods(
+                List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")
+        );
+
+        configuration.setAllowedHeaders(
+                List.of("Authorization", "Content-Type")
+        );
+
+        configuration.setAllowCredentials(false);
+
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
+
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
     }
 
     @Bean
